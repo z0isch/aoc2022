@@ -1,3 +1,5 @@
+use std::collections::BinaryHeap;
+
 pub fn part_one(input: &str) -> Option<u32> {
     let mut highest = 0;
     let mut current = 0;
@@ -35,10 +37,31 @@ pub fn part_two(input: &str) -> Option<u32> {
     return Some(cals[cals.len() - 1] + cals[cals.len() - 2] + cals[cals.len() - 3]);
 }
 
+pub fn part_two_binary_heap(input: &str) -> Option<u32> {
+    let res = input
+        .split('\n')
+        .fold(
+            (BinaryHeap::new(), 0),
+            |(mut heap, curr), line| match line {
+                "" => {
+                    heap.push(curr);
+                    return (heap, 0);
+                }
+                x => (heap, curr + x.parse::<u32>().unwrap()),
+            },
+        )
+        .0
+        .iter()
+        .take(3)
+        .sum();
+    return Some(res);
+}
+
 fn main() {
     let input = &advent_of_code::read_file("inputs", 1);
     advent_of_code::solve!(1, part_one, input);
     advent_of_code::solve!(2, part_two, input);
+    advent_of_code::solve!(2, part_two_binary_heap, input);
 }
 
 #[cfg(test)]
