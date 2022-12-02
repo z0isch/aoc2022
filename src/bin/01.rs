@@ -8,14 +8,14 @@ pub fn part_one(input: &str) -> Option<u32> {
             "" => current = 0,
             x => {
                 let cals: u32 = line.parse().expect(x);
-                current = current + cals;
+                current += cals;
                 if current > highest {
                     highest = current
                 }
             }
         }
     }
-    return Some(highest);
+    Some(highest)
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
@@ -29,32 +29,33 @@ pub fn part_two(input: &str) -> Option<u32> {
             }
             x => {
                 let cals: u32 = line.parse().expect(x);
-                current = current + cals;
+                current += cals;
             }
         }
     }
     cals.sort();
-    return Some(cals[cals.len() - 1] + cals[cals.len() - 2] + cals[cals.len() - 3]);
+    Some(cals[cals.len() - 1] + cals[cals.len() - 2] + cals[cals.len() - 3])
 }
 
 pub fn part_two_binary_heap(input: &str) -> Option<u32> {
-    let res = input
-        .split('\n')
-        .fold(
-            (BinaryHeap::new(), 0),
-            |(mut heap, curr), line| match line {
-                "" => {
-                    heap.push(curr);
-                    return (heap, 0);
-                }
-                x => (heap, curr + x.parse::<u32>().unwrap()),
-            },
-        )
-        .0
-        .iter()
-        .take(3)
-        .sum();
-    return Some(res);
+    Some(
+        input
+            .split('\n')
+            .fold(
+                (BinaryHeap::new(), 0),
+                |(mut heap, curr), line| match line {
+                    "" => {
+                        heap.push(curr);
+                        (heap, 0)
+                    }
+                    x => (heap, curr + x.parse::<u32>().unwrap()),
+                },
+            )
+            .0
+            .iter()
+            .take(3)
+            .sum(),
+    )
 }
 
 fn main() {

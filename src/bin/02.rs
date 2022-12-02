@@ -1,69 +1,41 @@
 pub fn part_one(input: &str) -> Option<u32> {
-    let res: u32 = input.split('\n').fold(0, |total, line| match line {
-        "A X" => {
-            return total + 1 + 3;
-        }
-        "A Y" => {
-            return total + 2 + 6;
-        }
-        "A Z" => {
-            return total + 3 + 0;
-        }
-        "B X" => {
-            return total + 1 + 0;
-        }
-        "B Y" => {
-            return total + 2 + 3;
-        }
-        "B Z" => {
-            return total + 3 + 6;
-        }
-        "C X" => {
-            return total + 1 + 6;
-        }
-        "C Y" => {
-            return total + 2 + 0;
-        }
-        "C Z" => {
-            return total + 3 + 3;
-        }
-        _ => return total,
-    });
-    return Some(res);
+    Some(
+        input
+            .split('\n')
+            .map(|line| match line {
+                "A X" => 1 + 3,
+                "A Y" => 2 + 6,
+                "A Z" => 3,
+                "B X" => 1,
+                "B Y" => 2 + 3,
+                "B Z" => 3 + 6,
+                "C X" => 1 + 6,
+                "C Y" => 2,
+                "C Z" => 3 + 3,
+                _ => 0,
+            })
+            .sum(),
+    )
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
-    let res: u32 = input.split('\n').fold(0, |total, line| match line {
-        "A X" => {
-            return total + 3 + 0;
-        }
-        "A Y" => {
-            return total + 1 + 3;
-        }
-        "A Z" => {
-            return total + 2 + 6;
-        }
-        "B X" => {
-            return total + 1 + 0;
-        }
-        "B Y" => {
-            return total + 2 + 3;
-        }
-        "B Z" => {
-            return total + 3 + 6;
-        }
-        "C X" => {
-            return total + 2 + 0;
-        }
-        "C Y" => {
-            return total + 3 + 3;
-        }
-        "C Z" => {
-            return total + 1 + 6;
-        }
-        _ => return total,
-    });
-    return Some(res);
+    Some(
+        input
+            .split('\n')
+            .map(|line| match line {
+                "A X" => 3,
+                "A Y" => 1 + 3,
+                "A Z" => 2 + 6,
+                "B X" => 1,
+                "B Y" => 2 + 3,
+                "B Z" => 3 + 6,
+                "C X" => 2,
+                "C Y" => 3 + 3,
+                "C Z" => 1 + 6,
+                _ => 0,
+            })
+            .sum(),
+    )
 }
 
 fn main() {
