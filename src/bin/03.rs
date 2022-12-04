@@ -1,4 +1,4 @@
-use std::{collections::HashSet, hash::Hash};
+use std::collections::HashSet;
 
 fn char_priority(c: &char) -> u32 {
     let dec = *c as u32;
@@ -24,12 +24,16 @@ pub fn part_one(input: &str) -> Option<u32> {
 pub fn part_two(input: &str) -> Option<u32> {
     let mut xs = input.split('\n');
     let mut total = 0;
-    while let Some(x) = xs.next() {
-        let y: HashSet<char> = HashSet::from_iter(xs.next().unwrap().chars());
-        let z: HashSet<char> = HashSet::from_iter(xs.next().unwrap().chars());
-        let t: HashSet<char> =
-            HashSet::from_iter(HashSet::from_iter(x.chars()).intersection(&y).map(|t| *t));
-        total += t.intersection(&z).map(char_priority).sum::<u32>();
+    let to_set = |i: &str| -> HashSet<char> {
+        return HashSet::from_iter(i.chars());
+    };
+    while let Some(x) = xs.next().map(to_set) {
+        let y = xs.next().map(to_set).unwrap();
+        let z = xs.next().map(to_set).unwrap();
+        total += HashSet::from_iter(x.intersection(&y).copied())
+            .intersection(&z)
+            .map(char_priority)
+            .sum::<u32>();
     }
     Some(total)
 }
