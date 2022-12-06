@@ -11,12 +11,8 @@ pub fn part_two(input: &str) -> Option<usize> {
 fn find_non_repeat(input: &str, length: usize) -> usize {
     let mut i = 0;
     loop {
-        if input[i..i + length]
-            .chars()
-            .collect::<HashSet<char>>()
-            .len()
-            == length
-        {
+        let set = input[i..i + length].chars().collect::<HashSet<char>>();
+        if set.len() == length {
             break;
         }
         i += 1;
