@@ -32,12 +32,13 @@ pub fn part_two(input: &str) -> Option<u32> {
     let (root_size, sizes) = get_sizes(root);
     let min_size_needed_to_delete = 30000000 - (70000000 - root_size);
 
-    let mut possibles = sizes
-        .into_iter()
-        .filter(|s| s >= &min_size_needed_to_delete)
-        .collect::<Vec<u32>>();
-    possibles.sort();
-    Some(possibles[0])
+    Some(
+        sizes
+            .into_iter()
+            .filter(|s| s >= &min_size_needed_to_delete)
+            .min()
+            .unwrap(),
+    )
 }
 
 fn get_sizes(root: Dir) -> (u32, Vec<u32>) {
