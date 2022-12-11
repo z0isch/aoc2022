@@ -49,7 +49,8 @@ fn solve(
 
     inspections_per_monkey
         .iter()
-        .sorted_by(|a, b| b.cmp(a))
+        .sorted()
+        .rev()
         .take(2)
         .product()
 }
