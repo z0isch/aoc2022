@@ -1,29 +1,20 @@
 use itertools::Itertools;
-use pathfinding::prelude::astar;
+use pathfinding::prelude::bfs;
 
-pub fn part_one(input: &str) -> Option<u32> {
-    let (grid, start, end) = parse(input);
+pub fn part_one(input: &str) -> Option<usize> {
+    let HeightMap {
+        grid, start, end, ..
+    } = parse(input);
     min_steps(&grid, start, end)
 }
 
-pub fn part_two(input: &str) -> Option<u32> {
-    let (grid, _, end) = parse(input);
-
-    let possible_starts = grid
-        .iter()
-        .enumerate()
-        .flat_map(|(y, g)| {
-            g.iter()
-                .enumerate()
-                .flat_map(|(x, &c)| {
-                    if c == 'a' {
-                        return vec![(x as i32, y as i32)];
-                    }
-                    vec![]
-                })
-                .collect_vec()
-        })
-        .collect_vec();
+pub fn part_two(input: &str) -> Option<usize> {
+    let HeightMap {
+        grid,
+        end,
+        possible_starts,
+        ..
+    } = parse(input);
 
     Some(
         possible_starts
@@ -34,20 +25,18 @@ pub fn part_two(input: &str) -> Option<u32> {
     )
 }
 
-fn min_steps(grid: &[Vec<char>], start: (i32, i32), end: (i32, i32)) -> Option<u32> {
-    astar(
+fn min_steps(grid: &[Vec<char>], start: (i32, i32), end: (i32, i32)) -> Option<usize> {
+    bfs(
         &start,
         |&(x, y)| {
             vec![(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
                 .into_iter()
                 .filter(|&p| can_go(grid, (x, y), p))
-                .map(|p| (p, 1))
                 .collect_vec()
         },
-        |&p| end.0.abs_diff(p.0) + end.1.abs_diff(p.1),
         |&p| p == end,
     )
-    .map(|r| r.1)
+    .map(|r| r.len() - 1)
 }
 
 fn can_go(grid: &[Vec<char>], (x1, y1): (i32, i32), (x2, y2): (i32, i32)) -> bool {
@@ -57,9 +46,18 @@ fn can_go(grid: &[Vec<char>], (x1, y1): (i32, i32), (x2, y2): (i32, i32)) -> boo
         .unwrap_or_default()
 }
 
-fn parse(input: &str) -> (Vec<Vec<char>>, (i32, i32), (i32, i32)) {
+struct HeightMap {
+    grid: Vec<Vec<char>>,
+    start: (i32, i32),
+    end: (i32, i32),
+    possible_starts: Vec<(i32, i32)>,
+}
+
+fn parse(input: &str) -> HeightMap {
     let mut start = (0, 0);
     let mut end = (0, 0);
+    let mut possible_starts = vec![];
+
     let mut grid = input
         .split_terminator('\n')
         .map(|l| l.chars().collect_vec())
@@ -75,9 +73,17 @@ fn parse(input: &str) -> (Vec<Vec<char>>, (i32, i32), (i32, i32)) {
                 end = (x as i32, y as i32);
                 grid[y][x] = 'z';
             }
+            if grid[y][x] == 'a' {
+                possible_starts.push((x as i32, y as i32))
+            }
         }
     }
-    (grid, start, end)
+    HeightMap {
+        grid,
+        start,
+        end,
+        possible_starts,
+    }
 }
 
 fn main() {

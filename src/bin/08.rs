@@ -37,6 +37,7 @@ pub fn part_one(input: &str) -> Option<usize> {
         }
     }
 
+    #[allow(clippy::needless_range_loop)]
     for y in 0..parsed.len() {
         let mut max_so_far = parsed[0][y];
         let mut vis_trees = HashSet::from([(0, y)]);
