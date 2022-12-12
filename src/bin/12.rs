@@ -16,13 +16,13 @@ pub fn part_two(input: &str) -> Option<usize> {
         ..
     } = parse(input);
 
-    Some(
-        possible_starts
-            .iter()
-            .filter_map(|&start| min_steps(&grid, start, end))
-            .sorted()
-            .collect_vec()[0],
-    )
+    possible_starts
+        .iter()
+        .filter_map(|&start| min_steps(&grid, start, end))
+        .sorted()
+        .collect_vec()
+        .first()
+        .copied()
 }
 
 fn min_steps(grid: &[Vec<char>], start: (i32, i32), end: (i32, i32)) -> Option<usize> {
