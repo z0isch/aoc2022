@@ -5,58 +5,49 @@ pub fn part_one(input: &str) -> Option<usize> {
     let HeightMap {
         grid, start, end, ..
     } = parse(input);
-    min_steps(&grid, start, end)
+    min_steps(&grid, end, &|&p| p == start)
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
-    let HeightMap {
-        grid,
-        end,
-        possible_starts,
-        ..
-    } = parse(input);
+    let HeightMap { grid, end, .. } = parse(input);
 
-    possible_starts
-        .iter()
-        .filter_map(|&start| min_steps(&grid, start, end))
-        .sorted()
-        .collect_vec()
-        .first()
-        .copied()
+    min_steps(&grid, end, &|&(x, y)| grid[y as usize][x as usize] == 'a')
 }
 
-fn min_steps(grid: &[Vec<char>], start: (i32, i32), end: (i32, i32)) -> Option<usize> {
+fn min_steps(
+    grid: &[Vec<char>],
+    end: (i32, i32),
+    at_end: &dyn Fn(&(i32, i32)) -> bool,
+) -> Option<usize> {
     bfs(
-        &start,
+        &end,
         |&(x, y)| {
             vec![(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
                 .into_iter()
-                .filter(|&p| can_go(grid, (x, y), p))
+                .filter(|&(x2, y2)| {
+                    grid.get(y2 as usize)
+                        .and_then(|g| g.get(x2 as usize))
+                        .map(|&from_char| {
+                            from_char as u32 >= grid[y as usize][x as usize] as u32 - 1
+                        })
+                        .unwrap_or_default()
+                })
                 .collect_vec()
         },
-        |&p| p == end,
+        at_end,
     )
     .map(|r| r.len() - 1)
-}
-
-fn can_go(grid: &[Vec<char>], (x1, y1): (i32, i32), (x2, y2): (i32, i32)) -> bool {
-    grid.get(y2 as usize)
-        .and_then(|g| g.get(x2 as usize))
-        .map(|&to_char| grid[y1 as usize][x1 as usize] as u32 + 1 >= to_char as u32)
-        .unwrap_or_default()
 }
 
 struct HeightMap {
     grid: Vec<Vec<char>>,
     start: (i32, i32),
     end: (i32, i32),
-    possible_starts: Vec<(i32, i32)>,
 }
 
 fn parse(input: &str) -> HeightMap {
     let mut start = (0, 0);
     let mut end = (0, 0);
-    let mut possible_starts = vec![];
 
     let mut grid = input
         .split_terminator('\n')
@@ -73,17 +64,9 @@ fn parse(input: &str) -> HeightMap {
                 end = (x as i32, y as i32);
                 grid[y][x] = 'z';
             }
-            if grid[y][x] == 'a' {
-                possible_starts.push((x as i32, y as i32))
-            }
         }
     }
-    HeightMap {
-        grid,
-        start,
-        end,
-        possible_starts,
-    }
+    HeightMap { grid, start, end }
 }
 
 fn main() {
