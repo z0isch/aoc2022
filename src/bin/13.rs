@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use pathfinding::directed::topological_sort;
 
 pub fn part_one(input: &str) -> Option<usize> {
     let pairs = input
@@ -41,22 +40,20 @@ pub fn part_two(input: &str) -> Option<usize> {
     packets.push(divider1.clone());
     packets.push(divider2.clone());
 
+    packets.sort_by(|a, b| {
+        if in_correct_order(&mut a.clone(), &mut b.clone()) {
+            return std::cmp::Ordering::Less;
+        }
+        std::cmp::Ordering::Greater
+    });
+
     Some(
-        topological_sort::topological_sort(&packets, |before| {
-            packets
-                .clone()
-                .into_iter()
-                .filter(|after| {
-                    before != after && in_correct_order(&mut before.clone(), &mut after.clone())
-                })
-                .collect_vec()
-        })
-        .unwrap()
-        .iter()
-        .enumerate()
-        .filter(|&(_, p)| divider1 == *p || divider2 == *p)
-        .map(|(i, _)| i + 1)
-        .product(),
+        packets
+            .iter()
+            .enumerate()
+            .filter(|&(_, p)| divider1 == *p || divider2 == *p)
+            .map(|(i, _)| i + 1)
+            .product(),
     )
 }
 
