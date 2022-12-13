@@ -18,7 +18,7 @@ pub fn part_one(input: &str) -> Option<usize> {
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
-    let mut pairs = input
+    let mut packets = input
         .split("\n\n")
         .flat_map(|l| l.split_terminator('\n').map(tokenize).collect_vec())
         .collect_vec();
@@ -38,12 +38,12 @@ pub fn part_two(input: &str) -> Option<usize> {
         Token::ClosedParen,
     ];
 
-    pairs.push(divider1.clone());
-    pairs.push(divider2.clone());
+    packets.push(divider1.clone());
+    packets.push(divider2.clone());
 
     Some(
-        topological_sort::topological_sort(&pairs, |before| {
-            pairs
+        topological_sort::topological_sort(&packets, |before| {
+            packets
                 .clone()
                 .into_iter()
                 .filter(|after| {
@@ -154,6 +154,6 @@ mod tests {
     #[test]
     fn test_part_two() {
         let input = advent_of_code::read_file("examples", 13);
-        assert_eq!(part_two(&input), None);
+        assert_eq!(part_two(&input), Some(140));
     }
 }
