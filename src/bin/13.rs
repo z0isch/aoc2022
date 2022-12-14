@@ -17,43 +17,33 @@ pub fn part_one(input: &str) -> Option<usize> {
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
-    let mut packets = input
+    let packets = input
         .split("\n\n")
         .flat_map(|l| l.split_terminator('\n').map(tokenize).collect_vec())
         .collect_vec();
 
-    let divider1 = vec![
-        Token::OpenParen,
-        Token::OpenParen,
-        Token::Int { i: 2 },
-        Token::ClosedParen,
-        Token::ClosedParen,
-    ];
-    let divider2 = vec![
-        Token::OpenParen,
-        Token::OpenParen,
-        Token::Int { i: 6 },
-        Token::ClosedParen,
-        Token::ClosedParen,
-    ];
-
-    packets.push(divider1.clone());
-    packets.push(divider2.clone());
-
-    packets.sort_by(|a, b| {
-        if in_correct_order(&mut a.clone(), &mut b.clone()) {
-            return std::cmp::Ordering::Less;
-        }
-        std::cmp::Ordering::Greater
-    });
-
-    Some(
+    let num_before = |divider: Vec<Token>| {
         packets
             .iter()
-            .enumerate()
-            .filter(|&(_, p)| divider1 == *p || divider2 == *p)
-            .map(|(i, _)| i + 1)
-            .product(),
+            .filter(|&p| in_correct_order(&mut p.clone(), &mut divider.clone()))
+            .collect_vec()
+            .len()
+    };
+
+    Some(
+        1 + num_before(vec![
+            Token::OpenParen,
+            Token::OpenParen,
+            Token::Int { i: 2 },
+            Token::ClosedParen,
+            Token::ClosedParen,
+        ]) * (2 + num_before(vec![
+            Token::OpenParen,
+            Token::OpenParen,
+            Token::Int { i: 6 },
+            Token::ClosedParen,
+            Token::ClosedParen,
+        ])),
     )
 }
 
