@@ -28,7 +28,7 @@ pub fn part_one(input: &str) -> Option<i128> {
 pub fn part_two(input: &str) -> Option<i128> {
     let sensors = parse(input);
     let max_val = 4000000;
-    (0..(max_val + 1)).into_par_iter().find_map_first(|y| {
+    (0..(max_val + 1)).into_par_iter().find_map_any(|y| {
         let no_beacons = find_intervals(&sensors, y);
         if no_beacons.len() == 2 {
             return Some(no_beacons[0].1 * 4000000 + y);
