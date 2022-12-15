@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 
 use itertools::Itertools;
+use rayon::prelude::*;
 use regex::Regex;
 
 pub fn part_one(input: &str) -> Option<i128> {
@@ -27,14 +28,13 @@ pub fn part_one(input: &str) -> Option<i128> {
 pub fn part_two(input: &str) -> Option<i128> {
     let sensors = parse(input);
     let max_val = 4000000;
-    let mut answer = None;
-    for y in 0..(max_val + 1) {
+    (0..(max_val + 1)).into_par_iter().find_map_first(|y| {
         let no_beacons = find_intervals(&sensors, y);
         if no_beacons.len() == 2 {
-            answer = Some(no_beacons[0].1 * 4000000 + y);
+            return Some(no_beacons[0].1 * 4000000 + y);
         }
-    }
-    answer
+        None
+    })
 }
 
 struct Sensor {
@@ -59,7 +59,7 @@ fn find_intervals(sensors: &[Sensor], y_val: i128) -> Vec<(i128, i128)> {
             },
         )
         .collect_vec();
-        
+
     intervals.sort_by(|(x1, _), (x2, _)| x1.cmp(x2));
 
     let mut intervals_iter = intervals.iter();
